@@ -30,6 +30,18 @@
   box-shadow: 0 0 0 2px rgba(249, 168, 212, 0.5);
 }
 
+/* Ocultar flechas de input number */
+.number-input-no-arrows::-webkit-outer-spin-button,
+.number-input-no-arrows::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.number-input-no-arrows[type=number] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
 /* Estilos para dispositivos móviles */
 @media (max-width: 640px) {
   .container {

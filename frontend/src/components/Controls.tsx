@@ -62,7 +62,7 @@ export const Controls: React.FC<ControlsProps> = ({
                 else setCardCount(value);
               }}
               disabled={isGameStarted}
-              className="flex-1 min-w-0 p-2 border border-purple-200 rounded-md text-center text-sm sm:text-lg focus:ring-2 focus:ring-pink-300 focus:border-pink-300 disabled:bg-gray-200"
+              className="w-16 sm:w-20 p-2 border border-purple-200 rounded-md text-center text-sm sm:text-lg focus:ring-2 focus:ring-pink-300 focus:border-pink-300 disabled:bg-gray-200 number-input-no-arrows"
             />
           </div>
           <div className="flex items-center gap-2">
