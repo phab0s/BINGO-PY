@@ -181,11 +181,11 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#FDF8FD] text-gray-800 p-4 sm:p-8">
-      <main className="container mx-auto">
-        <header className="text-center mb-8 print:hidden">
-          <h1 className="font-pacifico text-4xl sm:text-5xl text-[#E59BB4]">Baby Shower</h1>
-          <h2 className="text-5xl sm:text-7xl font-bold tracking-[1rem] text-[#8A8BC3] mt-2">BINGO</h2>
+    <div className="min-h-screen w-full bg-[#FDF8FD] text-gray-800 p-2 sm:p-4 lg:p-8">
+      <main className="container mx-auto max-w-7xl">
+        <header className="text-center mb-4 sm:mb-6 lg:mb-8 print:hidden">
+          <h1 className="font-pacifico text-3xl sm:text-4xl lg:text-5xl text-[#E59BB4]">Baby Shower</h1>
+          <h2 className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-wide sm:tracking-[0.5rem] lg:tracking-[1rem] text-[#8A8BC3] mt-1 sm:mt-2">BINGO</h2>
         </header>
 
         <Controls
