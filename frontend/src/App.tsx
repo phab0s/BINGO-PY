@@ -156,13 +156,27 @@ const App: React.FC = () => {
           setBabyName(sessionData.babyName);
           
           if (loadCards && sessionData.cards && Array.isArray(sessionData.cards)) {
+            // Cargar cartones exactos del archivo
             setGeneratedCards(sessionData.cards);
             resetGameState(false);
-            alert(`¡Sesión cargada! Nombre: "${sessionData.babyName}" y ${sessionData.cards.length} cartones.`);
+            alert(`¡Sesión completa cargada! Nombre: "${sessionData.babyName}" y ${sessionData.cards.length} cartones originales.`);
+          } else if (sessionData.cards && Array.isArray(sessionData.cards)) {
+            // Solo datos básicos: generar cartones frescos con la misma cantidad
+            const cardCount = sessionData.cards.length;
+            const newCards: CardData[] = Array.from({ length: cardCount }, () => ({
+              B: shuffleArray([...BINGO_GROUPS.B]).slice(0, 5),
+              I: shuffleArray([...BINGO_GROUPS.I]).slice(0, 5),
+              N: shuffleArray([...BINGO_GROUPS.N]).slice(0, 4),
+              G: shuffleArray([...BINGO_GROUPS.G]).slice(0, 5),
+              O: shuffleArray([...BINGO_GROUPS.O]).slice(0, 5),
+            }));
+            setGeneratedCards(newCards);
+            resetGameState(false);
+            alert(`¡Datos cargados! Nombre: "${sessionData.babyName}" y ${cardCount} cartones frescos generados. ¡Listo para jugar!`);
           } else {
             setGeneratedCards([]);
             resetGameState(false);
-            alert(`¡Datos básicos cargados! Nombre: "${sessionData.babyName}". Los cartones no fueron cargados.`);
+            alert(`¡Datos cargados! Nombre: "${sessionData.babyName}". Genera cartones para continuar.`);
           }
         } else {
           throw new Error("El formato del archivo de sesión no es correcto.");
