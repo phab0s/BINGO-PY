@@ -1,0 +1,238 @@
+/* Estilos globales para la aplicación de Bingo */
+
+/* Reset básico */
+* {
+  box-sizing: border-box;
+}
+
+/* Animaciones suaves */
+.transition-colors {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Estilos para botones deshabilitados */
+.disabled\:bg-gray-400:disabled {
+  background-color: #9ca3af;
+}
+
+.disabled\:cursor-not-allowed:disabled {
+  cursor: not-allowed;
+}
+
+/* Mejoras de accesibilidad */
+.focus\:ring-2:focus {
+  box-shadow: 0 0 0 2px rgba(219, 39, 119, 0.5);
+}
+
+.focus\:ring-pink-300:focus {
+  box-shadow: 0 0 0 2px rgba(249, 168, 212, 0.5);
+}
+
+/* Estilos para dispositivos móviles */
+@media (max-width: 640px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .bingo-complete-grid {
+    min-width: 320px;
+    font-size: 0.8rem;
+  }
+  
+  .bingo-header-cell {
+    font-size: 1.5rem;
+    height: 40px;
+  }
+  
+  .bingo-cell {
+    min-height: 80px;
+  }
+}
+
+/* Optimización de imágenes para alta resolución */
+img {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  image-rendering: high-quality;
+  image-rendering: auto;
+}
+
+/* Distribución uniforme del grid de bingo */
+.bingo-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Nueva grilla completa con encabezado integrado */
+.bingo-complete-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: auto repeat(5, 1fr);
+  gap: 0;
+  width: 100%;
+  min-width: 500px;
+  max-width: 100%;
+  box-sizing: border-box;
+  border: 2px solid #D6D2E8;
+  border-top: none;
+  border-radius: 0 0 6px 6px;
+  overflow: visible;
+}
+
+.bingo-cell {
+  aspect-ratio: 1 / 1;
+  min-height: 110px;
+  display: flex;
+  flex-direction: column;
+  border-left: 2px solid #D6D2E8;
+  border-bottom: 2px solid #D6D2E8;
+  box-sizing: border-box;
+}
+
+/* Eliminar borde inferior de la última fila de celdas */
+.bingo-complete-grid > .bingo-cell:nth-of-type(n+21) {
+  border-bottom: none;
+}
+
+.bingo-header-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+  font-weight: 800;
+  font-size: 2.25rem;
+  letter-spacing: 0.05em;
+  border: 2px solid #D6D2E8;
+  border-left: none;
+  background-color: #f8f9fa;
+  box-sizing: border-box;
+  text-align: center;
+  padding: 0;
+  margin: 0;
+  position: relative;
+  width: 100%;
+}
+
+/* Asegurar que la primera letra tenga borde izquierdo */
+.bingo-header-cell:first-child {
+  border-left: 2px solid #D6D2E8;
+}
+
+/* Eliminar borde izquierdo de la primera columna */
+.bingo-complete-grid > *:nth-child(5n+1) {
+  border-left: none;
+}
+
+/* Agregar borde derecho a la última columna (columna O) */
+.bingo-complete-grid > *:nth-child(5n) {
+  border-right: 2px solid #D6D2E8;
+}
+
+/* Línea horizontal entre las filas 4 y 5 (después de la fila 4 del juego, elementos 21-25) */
+.bingo-complete-grid > *:nth-child(n+21):nth-child(-n+25) {
+  border-bottom: 2px solid #D6D2E8;
+}
+
+@media (min-width: 640px) {
+  .bingo-header-cell {
+    height: 56px;
+    font-size: 2.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .bingo-header-cell {
+    height: 64px;
+    font-size: 2.5rem;
+  }
+}
+
+/* Aumentar tamaños en pantallas medianas y grandes */
+@media (min-width: 640px) {
+  .bingo-cell {
+    min-height: 130px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .bingo-cell {
+    min-height: 150px;
+  }
+}
+
+/* Estilo para elementos con scroll suave */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Estilos para impresión */
+@media print {
+  body {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  @page {
+    size: letter;
+    margin: 0.5in;
+  }
+
+  .print-container {
+    width: 100%;
+  }
+
+  .bingo-card-container {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .bingo-complete-grid {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    border: 2px solid #D6D2E8 !important;
+  }
+
+  .bingo-header-cell {
+    text-align: center !important;
+    display: flex !important; 
+    align-items: center; 
+    justify-content: center;
+    font-size: 2.5rem !important;
+    padding: 0.5rem 0 !important;
+    border: 1px solid #D6D2E8 !important;
+    background-color: #f8f9fa !important;
+    color: #8A8BC3 !important;
+  }
+
+  .bingo-cell {
+    border: 1px solid #D6D2E8 !important;
+    min-height: 100px;
+  }
+
+  .bingo-cell p {
+    font-size: 8pt !important;
+  }
+
+  img {
+    max-width: 90% !important;
+    max-height: 90% !important;
+    object-fit: contain !important;
+  }
+
+  .page-break {
+    break-after: page;
+    page-break-after: always;
+  }
+
+  .print\:hidden {
+    display: none !important;
+  }
+}

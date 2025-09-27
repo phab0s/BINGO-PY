@@ -1,0 +1,160 @@
+import React, { useState, useRef } from 'react';
+
+interface ControlsProps {
+  onGenerateAuto: (count: number) => void;
+  babyName: string;
+  onBabyNameChange: (name: string) => void;
+  onDownloadPdf: () => void;
+  isDownloadingPdf: boolean;
+  hasCards: boolean;
+  isGameStarted: boolean;
+  onStartGame: () => void;
+  onDrawItem: () => void;
+  canDrawItems: boolean;
+  onResetGame: () => void;
+  // Props para guardar y cargar sesión
+  onSaveSession: () => void;
+  onLoadSession: (event: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+export const Controls: React.FC<ControlsProps> = ({
+  onGenerateAuto,
+  babyName,
+  onBabyNameChange,
+  onDownloadPdf,
+  isDownloadingPdf,
+  hasCards,
+  isGameStarted,
+  onStartGame,
+  onDrawItem,
+  canDrawItems,
+  onResetGame,
+  onSaveSession,
+  onLoadSession,
+}) => {
+  const [cardCount, setCardCount] = useState<number>(4);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleLoadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  return (
+    <div className="p-6 bg-white/70 rounded-xl shadow-lg mb-8 print:hidden">
+      {/* --- Fila Superior: Configuración --- */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center mb-4">
+        <div className="flex flex-wrap items-center justify-center md:justify-start gap-4">
+          <div className="flex items-center gap-2">
+            <label htmlFor="cardCount" className="font-semibold text-lg text-gray-700">
+              Cartones:
+            </label>
+            <input
+              type="number"
+              id="cardCount"
+              min="1"
+              max="100"
+              value={cardCount}
+              onChange={(e) => {
+                const value = parseInt(e.target.value, 10);
+                if (isNaN(value) || value < 1) setCardCount(1);
+                else if (value > 100) setCardCount(100);
+                else setCardCount(value);
+              }}
+              disabled={isGameStarted}
+              className="w-20 p-2 border border-purple-200 rounded-md text-center text-lg focus:ring-2 focus:ring-pink-300 focus:border-pink-300 disabled:bg-gray-200"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <label htmlFor="babyName" className="font-semibold text-lg text-gray-700">
+              Nombre Bebé:
+            </label>
+            <input
+              type="text"
+              id="babyName"
+              value={babyName}
+              onChange={(e) => {
+                const cleanValue = e.target.value.replace(/[<>:"/\\|?*]/g, '');
+                onBabyNameChange(cleanValue);
+              }}
+              placeholder="Opcional"
+              maxLength={50}
+              disabled={isGameStarted}
+              className="w-36 p-2 border border-purple-200 rounded-md text-lg focus:ring-2 focus:ring-pink-300 focus:border-pink-300 disabled:bg-gray-200"
+            />
+          </div>
+        </div>
+        {/* --- Fila Superior: Botones de Sesión --- */}
+        <div className="flex flex-wrap items-center justify-center md:justify-end gap-2 sm:gap-4">
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={onLoadSession}
+            accept=".json"
+            className="hidden"
+          />
+          <button
+            onClick={handleLoadClick}
+            disabled={isGameStarted}
+            className="px-4 py-2 bg-blue-500 text-white font-bold rounded-lg shadow-md hover:bg-blue-600 transition-colors duration-300 disabled:bg-gray-400"
+          >
+            📂 Cargar Sesión
+          </button>
+          <button
+            onClick={onSaveSession}
+            disabled={!hasCards || isGameStarted}
+            className="px-4 py-2 bg-teal-500 text-white font-bold rounded-lg shadow-md hover:bg-teal-600 transition-colors duration-300 disabled:bg-gray-400"
+          >
+            💾 Guardar Sesión
+          </button>
+        </div>
+      </div>
+
+      <hr className="my-4 border-gray-300"/>
+
+      {/* --- Fila Inferior: Botones de Acción del Juego --- */}
+      <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4">
+        {!isGameStarted ? (
+          <>
+            <button
+              onClick={() => onGenerateAuto(cardCount)}
+              className="px-6 py-3 bg-[#4DB6AC] text-white font-bold rounded-lg shadow-md hover:bg-[#45a59a] transition-colors duration-300 text-lg"
+            >
+              🎲 Generar Cartones
+            </button>
+            {hasCards && (
+              <button
+                onClick={onStartGame}
+                className="px-6 py-3 bg-green-500 text-white font-bold rounded-lg shadow-md hover:bg-green-600 transition-colors duration-300 text-lg"
+              >
+                🎉 Iniciar Juego
+              </button>
+            )}
+          </>
+        ) : (
+          <>
+            <button
+              onClick={onDrawItem}
+              disabled={!canDrawItems}
+              className="px-6 py-3 bg-orange-500 text-white font-bold rounded-lg shadow-md hover:bg-orange-600 transition-colors duration-300 disabled:bg-gray-400 text-lg"
+            >
+              {canDrawItems ? '🎟️ Llamar Objeto' : '🏁 Fin del Juego'}
+            </button>
+            <button
+              onClick={onResetGame}
+              className="px-6 py-3 bg-red-500 text-white font-bold rounded-lg shadow-md hover:bg-red-600 transition-colors duration-300 text-lg"
+            >
+              🔄 Reiniciar Juego
+            </button>
+          </>
+        )}
+        <button
+          onClick={onDownloadPdf}
+          disabled={!hasCards || isDownloadingPdf}
+          className="px-6 py-3 bg-[#E59BB4] text-white font-bold rounded-lg shadow-md hover:bg-[#d48aa3] transition-colors duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed text-lg"
+        >
+          {isDownloadingPdf ? 'Generando...' : '📄 Descargar PDF'}
+        </button>
+      </div>
+    </div>
+  );
+};
