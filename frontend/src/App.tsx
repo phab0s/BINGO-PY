@@ -32,6 +32,9 @@ const App: React.FC = () => {
   const [showLoadModal, setShowLoadModal] = useState(false);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [pendingSessionData, setPendingSessionData] = useState<any>(null);
+  
+  // Estado para controlar si se muestran los cartones en pantalla
+  const [showCardsOnScreen, setShowCardsOnScreen] = useState(true);
 
   const printLayoutRef = useRef<HTMLDivElement>(null);
 
@@ -53,6 +56,7 @@ const App: React.FC = () => {
   const handleGenerateAutoCards = useCallback((cardCount: number) => {
     if (cardCount <= 0) {
       setGeneratedCards([]);
+      setShowCardsOnScreen(true);
       resetGameState(false);
       return;
     }
@@ -69,6 +73,7 @@ const App: React.FC = () => {
       O: shuffleArray([...BINGO_GROUPS.O]).slice(0, 5),
     }));
     setGeneratedCards(newCards);
+    setShowCardsOnScreen(true); // Mostrar cartones generados
     resetGameState(false);
   }, [resetGameState]);
 
@@ -167,9 +172,10 @@ const App: React.FC = () => {
     if (pendingSessionData) {
       // Cargar datos sin mostrar cartones en pantalla (interfaz ligera)
       setBabyName(pendingSessionData.babyName);
-      setGeneratedCards(pendingSessionData.cards); // Los cartones se cargan pero pueden no mostrarse
+      setGeneratedCards(pendingSessionData.cards);
+      setShowCardsOnScreen(false); // NO mostrar cartones en pantalla
       resetGameState(false);
-      alert(`¡Datos cargados! Nombre: "${pendingSessionData.babyName}". Cartones listos para el juego (${pendingSessionData.cards.length} cartones).`);
+      alert(`¡Datos cargados! Nombre: "${pendingSessionData.babyName}". ${pendingSessionData.cards.length} cartones listos para el juego (sin mostrar en pantalla).`);
     }
     setShowLoadModal(false);
     setPendingFile(null);
@@ -178,11 +184,12 @@ const App: React.FC = () => {
 
   const handleLoadDataAndCards = () => {
     if (pendingSessionData) {
-      // Cargar datos y mostrar cartones en pantalla
+      // Cargar datos y mostrar cartones en pantalla uno a la vez
       setBabyName(pendingSessionData.babyName);
       setGeneratedCards(pendingSessionData.cards);
+      setShowCardsOnScreen(true); // SÍ mostrar cartones en pantalla
       resetGameState(false);
-      alert(`¡Sesión completa cargada! Nombre: "${pendingSessionData.babyName}" y ${pendingSessionData.cards.length} cartones mostrados en pantalla.`);
+      alert(`¡Sesión completa cargada! Nombre: "${pendingSessionData.babyName}" y ${pendingSessionData.cards.length} cartones mostrados uno a la vez en pantalla.`);
     }
     setShowLoadModal(false);
     setPendingFile(null);
@@ -251,7 +258,7 @@ const App: React.FC = () => {
           />
         )}
 
-        {generatedCards.length > 0 && <PrintLayout ref={printLayoutRef} cards={generatedCards} babyName={babyName} />}
+        {generatedCards.length > 0 && showCardsOnScreen && <PrintLayout ref={printLayoutRef} cards={generatedCards} babyName={babyName} />}
         
         {/* Modal de opciones de carga */}
         <LoadOptionsModal

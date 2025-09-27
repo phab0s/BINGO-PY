@@ -45,8 +45,8 @@ export const LoadOptionsModal: React.FC<LoadOptionsModalProps> = ({
                   Solo datos originales
                 </h4>
                 <p className="text-sm text-gray-600 mt-1">
-                  Cargar nombre y cartones del archivo, sin mostrarlos en pantalla.
-                  <span className="block text-green-600 font-medium">Recomendado - Interfaz ligera</span>
+                  Cargar nombre y cartones del archivo para el juego, sin mostrarlos en pantalla.
+                  <span className="block text-green-600 font-medium">✅ Recomendado - Solo para jugar</span>
                 </p>
               </div>
             </div>
@@ -64,8 +64,8 @@ export const LoadOptionsModal: React.FC<LoadOptionsModalProps> = ({
                   Datos y mostrar cartones
                 </h4>
                 <p className="text-sm text-gray-600 mt-1">
-                  Cargar todo y mostrar los cartones originales en pantalla.
-                  <span className="block text-orange-600 font-medium">Útil para visualizar el layout guardado</span>
+                  Cargar todo y mostrar los cartones uno a la vez en pantalla con navegación.
+                  <span className="block text-orange-600 font-medium">📋 Para revisar cartones antes del juego</span>
                 </p>
               </div>
             </div>
