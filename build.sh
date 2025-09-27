@@ -10,6 +10,13 @@ cd frontend
 npm install
 npm run build
 
+# Corregir rutas de assets
+echo "Corrigiendo rutas de assets..."
+cd dist
+sed -i 's|src="/assets/|src="/BINGO/assets/|g' index.html
+sed -i 's|href="/assets/|href="/BINGO/assets/|g' index.html
+cd ..
+
 # Crear directorio para archivos estáticos
 echo "Copiando archivos del frontend al backend..."
 mkdir -p ../backend/static
