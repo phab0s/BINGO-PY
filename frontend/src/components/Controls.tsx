@@ -98,8 +98,9 @@ export const Controls: React.FC<ControlsProps> = ({
             onClick={handleLoadClick}
             disabled={isGameStarted}
             className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-blue-500 text-white font-bold rounded-lg shadow-md hover:bg-blue-600 transition-colors duration-300 disabled:bg-gray-400 text-sm sm:text-base"
+            title="Cargar sesión desde archivo JSON"
           >
-            📂 <span className="hidden sm:inline">Cargar</span><span className="sm:hidden">Cargar</span>
+            📂 <span className="hidden sm:inline">Cargar Sesión</span><span className="sm:hidden">Cargar</span>
           </button>
           <button
             onClick={onSaveSession}

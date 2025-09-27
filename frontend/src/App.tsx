@@ -2,6 +2,7 @@ import React, { useState, useCallback, useRef } from 'react';
 import { Controls } from './components/Controls';
 import { PrintLayout } from './components/PrintLayout';
 import { ModeratorView } from './components/ModeratorView';
+import { LoadOptionsModal } from './components/LoadOptionsModal';
 import { BINGO_GROUPS } from './constants';
 import type { CardData, CalledBingoItem } from './types';
 
@@ -26,6 +27,10 @@ const App: React.FC = () => {
   const [currentItem, setCurrentItem] = useState<CalledBingoItem | null>(null);
   const [nextLetter, setNextLetter] = useState<string | null>(null);
   const [canDraw, setCanDraw] = useState(true);
+
+  // Estados para el modal de carga
+  const [showLoadModal, setShowLoadModal] = useState(false);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
 
   const printLayoutRef = useRef<HTMLDivElement>(null);
 
@@ -133,17 +138,32 @@ const App: React.FC = () => {
     const file = event.target.files?.[0];
     if (!file) return;
 
+    // Guardar el archivo y mostrar el modal de opciones
+    setPendingFile(file);
+    setShowLoadModal(true);
+    event.target.value = ''; // Resetear el input para poder cargar el mismo archivo de nuevo
+  };
+
+  const processFileLoad = (file: File, loadCards: boolean) => {
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
         const text = e.target?.result;
         if (typeof text !== 'string') throw new Error("El archivo no es válido.");
         const sessionData = JSON.parse(text);
-        if (sessionData.cards && Array.isArray(sessionData.cards) && sessionData.babyName !== undefined) {
+        
+        if (sessionData.babyName !== undefined) {
           setBabyName(sessionData.babyName);
-          setGeneratedCards(sessionData.cards);
-          resetGameState(false);
-          alert(`¡Sesión cargada con ${sessionData.cards.length} cartones!`);
+          
+          if (loadCards && sessionData.cards && Array.isArray(sessionData.cards)) {
+            setGeneratedCards(sessionData.cards);
+            resetGameState(false);
+            alert(`¡Sesión cargada! Nombre: "${sessionData.babyName}" y ${sessionData.cards.length} cartones.`);
+          } else {
+            setGeneratedCards([]);
+            resetGameState(false);
+            alert(`¡Datos básicos cargados! Nombre: "${sessionData.babyName}". Los cartones no fueron cargados.`);
+          }
         } else {
           throw new Error("El formato del archivo de sesión no es correcto.");
         }
@@ -153,7 +173,27 @@ const App: React.FC = () => {
       }
     };
     reader.readAsText(file);
-    event.target.value = ''; // Resetear el input para poder cargar el mismo archivo de nuevo
+  };
+
+  const handleLoadDataOnly = () => {
+    if (pendingFile) {
+      processFileLoad(pendingFile, false);
+    }
+    setShowLoadModal(false);
+    setPendingFile(null);
+  };
+
+  const handleLoadDataAndCards = () => {
+    if (pendingFile) {
+      processFileLoad(pendingFile, true);
+    }
+    setShowLoadModal(false);
+    setPendingFile(null);
+  };
+
+  const handleCloseModal = () => {
+    setShowLoadModal(false);
+    setPendingFile(null);
   };
 
   const handleServerPdfDownload = async () => {
@@ -213,6 +253,15 @@ const App: React.FC = () => {
         )}
 
         {generatedCards.length > 0 && <PrintLayout ref={printLayoutRef} cards={generatedCards} babyName={babyName} />}
+        
+        {/* Modal de opciones de carga */}
+        <LoadOptionsModal
+          isOpen={showLoadModal}
+          onClose={handleCloseModal}
+          onLoadDataOnly={handleLoadDataOnly}
+          onLoadDataAndCards={handleLoadDataAndCards}
+          fileName={pendingFile?.name}
+        />
       </main>
     </div>
   );
