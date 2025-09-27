@@ -32,7 +32,7 @@ export const Controls: React.FC<ControlsProps> = ({
   onSaveSession,
   onLoadSession,
 }) => {
-  const [cardCount, setCardCount] = useState<number>(4);
+  const [cardCount, setCardCount] = useState<number | string>(4);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleLoadClick = () => {
@@ -56,10 +56,16 @@ export const Controls: React.FC<ControlsProps> = ({
               max="100"
               value={cardCount}
               onChange={(e) => {
-                const value = parseInt(e.target.value, 10);
-                if (isNaN(value) || value < 1) setCardCount(1);
-                else if (value > 100) setCardCount(100);
-                else setCardCount(value);
+                const value = e.target.value;
+                if (value === '') {
+                  setCardCount('');
+                } else {
+                  const numValue = parseInt(value, 10);
+                  if (!isNaN(numValue)) {
+                    if (numValue > 100) setCardCount(100);
+                    else setCardCount(numValue);
+                  }
+                }
               }}
               disabled={isGameStarted}
               className="w-16 sm:w-20 p-2 border border-purple-200 rounded-md text-center text-sm sm:text-lg focus:ring-2 focus:ring-pink-300 focus:border-pink-300 disabled:bg-gray-200 number-input-no-arrows"
@@ -119,7 +125,15 @@ export const Controls: React.FC<ControlsProps> = ({
         {!isGameStarted ? (
           <>
             <button
-              onClick={() => onGenerateAuto(cardCount)}
+              onClick={() => {
+                const count = typeof cardCount === 'string' ? parseInt(cardCount, 10) : cardCount;
+                if (isNaN(count) || count < 1) {
+                  setCardCount(1);
+                  onGenerateAuto(1);
+                } else {
+                  onGenerateAuto(count);
+                }
+              }}
               className="w-full px-4 py-3 bg-[#4DB6AC] text-white font-bold rounded-lg shadow-md hover:bg-[#45a59a] transition-colors duration-300 text-sm sm:text-lg"
             >
               🎲 Generar Cartones
