@@ -40,25 +40,12 @@ balotera_instance: Optional[Balotera] = None
 # --- Inicialización de la App FastAPI ---
 app = FastAPI()
 
-# --- Servir archivos estáticos del frontend ---
-# Verificar si existe el directorio static (para producción)
-static_path = Path(__file__).parent / "static"
-if static_path.exists():
-    app.mount("/BINGO", StaticFiles(directory=str(static_path), html=True), name="static")
-    # También servir en la raíz para facilitar el acceso
-    app.mount("/", StaticFiles(directory=str(static_path), html=True), name="root")
-else:
-    # Para desarrollo local, servir desde el directorio frontend
-    frontend_path = Path(__file__).parent.parent / "frontend" / "dist"
-    if frontend_path.exists():
-        app.mount("/BINGO", StaticFiles(directory=str(frontend_path), html=True), name="static")
-        app.mount("/", StaticFiles(directory=str(frontend_path), html=True), name="root")
-
 # --- Configuración de CORS ---
 origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "https://www.psicometrica.co", # Dominio de producción
+    "https://bingo-app-ub52.onrender.com", # Render URL
 ]
 
 app.add_middleware(
@@ -256,3 +243,17 @@ async def generate_pdf_endpoint(request: PDFRequest):
     file_name = f"Bingo_Baby_Shower_{request.babyName or 'Juego'}.pdf"
     headers = {'Content-Disposition': f'inline; filename="{file_name}"'}
     return StreamingResponse(iter([pdf_bytes]), media_type="application/pdf", headers=headers)
+
+# --- Servir archivos estáticos del frontend (DEBE IR AL FINAL) ---
+# Verificar si existe el directorio static (para producción)
+static_path = Path(__file__).parent / "static"
+if static_path.exists():
+    app.mount("/BINGO", StaticFiles(directory=str(static_path), html=True), name="static")
+    # También servir en la raíz para facilitar el acceso
+    app.mount("/", StaticFiles(directory=str(static_path), html=True), name="root")
+else:
+    # Para desarrollo local, servir desde el directorio frontend
+    frontend_path = Path(__file__).parent.parent / "frontend" / "dist"
+    if frontend_path.exists():
+        app.mount("/BINGO", StaticFiles(directory=str(frontend_path), html=True), name="static")
+        app.mount("/", StaticFiles(directory=str(frontend_path), html=True), name="root")
