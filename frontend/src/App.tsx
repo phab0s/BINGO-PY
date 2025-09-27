@@ -5,7 +5,7 @@ import { ModeratorView } from './components/ModeratorView';
 import { BINGO_GROUPS } from './constants';
 import type { CardData, CalledBingoItem } from './types';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || (window.location.origin);
 
 const shuffleArray = <T,>(array: T[]): T[] => {
   const newArr = [...array];
