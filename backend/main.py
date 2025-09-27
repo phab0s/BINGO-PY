@@ -45,11 +45,14 @@ app = FastAPI()
 static_path = Path(__file__).parent / "static"
 if static_path.exists():
     app.mount("/BINGO", StaticFiles(directory=str(static_path), html=True), name="static")
+    # También servir en la raíz para facilitar el acceso
+    app.mount("/", StaticFiles(directory=str(static_path), html=True), name="root")
 else:
     # Para desarrollo local, servir desde el directorio frontend
     frontend_path = Path(__file__).parent.parent / "frontend" / "dist"
     if frontend_path.exists():
         app.mount("/BINGO", StaticFiles(directory=str(frontend_path), html=True), name="static")
+        app.mount("/", StaticFiles(directory=str(frontend_path), html=True), name="root")
 
 # --- Configuración de CORS ---
 origins = [
