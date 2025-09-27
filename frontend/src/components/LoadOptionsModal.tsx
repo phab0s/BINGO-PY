@@ -42,11 +42,11 @@ export const LoadOptionsModal: React.FC<LoadOptionsModalProps> = ({
               <div className="text-2xl">⚡</div>
               <div className="flex-1">
                 <h4 className="font-semibold text-gray-800 group-hover:text-blue-700">
-                  Datos con cartones frescos
+                  Solo datos originales
                 </h4>
                 <p className="text-sm text-gray-600 mt-1">
-                  Cargar nombre del bebé y generar cartones nuevos con la misma cantidad.
-                  <span className="block text-green-600 font-medium">Recomendado - Cartones únicos</span>
+                  Cargar nombre y cartones del archivo, sin mostrarlos en pantalla.
+                  <span className="block text-green-600 font-medium">Recomendado - Interfaz ligera</span>
                 </p>
               </div>
             </div>
@@ -61,11 +61,11 @@ export const LoadOptionsModal: React.FC<LoadOptionsModalProps> = ({
               <div className="text-2xl">📋</div>
               <div className="flex-1">
                 <h4 className="font-semibold text-gray-800 group-hover:text-orange-700">
-                  Cartones originales del archivo
+                  Datos y mostrar cartones
                 </h4>
                 <p className="text-sm text-gray-600 mt-1">
-                  Cargar exactamente los mismos cartones que se guardaron.
-                  <span className="block text-orange-600 font-medium">Útil para continuar juegos guardados</span>
+                  Cargar todo y mostrar los cartones originales en pantalla.
+                  <span className="block text-orange-600 font-medium">Útil para visualizar el layout guardado</span>
                 </p>
               </div>
             </div>

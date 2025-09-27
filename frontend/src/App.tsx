@@ -31,6 +31,7 @@ const App: React.FC = () => {
   // Estados para el modal de carga
   const [showLoadModal, setShowLoadModal] = useState(false);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [pendingSessionData, setPendingSessionData] = useState<any>(null);
 
   const printLayoutRef = useRef<HTMLDivElement>(null);
 
@@ -138,13 +139,6 @@ const App: React.FC = () => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Guardar el archivo y mostrar el modal de opciones
-    setPendingFile(file);
-    setShowLoadModal(true);
-    event.target.value = ''; // Resetear el input para poder cargar el mismo archivo de nuevo
-  };
-
-  const processFileLoad = (file: File, loadCards: boolean) => {
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
@@ -152,32 +146,11 @@ const App: React.FC = () => {
         if (typeof text !== 'string') throw new Error("El archivo no es válido.");
         const sessionData = JSON.parse(text);
         
-        if (sessionData.babyName !== undefined) {
-          setBabyName(sessionData.babyName);
-          
-          if (loadCards && sessionData.cards && Array.isArray(sessionData.cards)) {
-            // Cargar cartones exactos del archivo
-            setGeneratedCards(sessionData.cards);
-            resetGameState(false);
-            alert(`¡Sesión completa cargada! Nombre: "${sessionData.babyName}" y ${sessionData.cards.length} cartones originales.`);
-          } else if (sessionData.cards && Array.isArray(sessionData.cards)) {
-            // Solo datos básicos: generar cartones frescos con la misma cantidad
-            const cardCount = sessionData.cards.length;
-            const newCards: CardData[] = Array.from({ length: cardCount }, () => ({
-              B: shuffleArray([...BINGO_GROUPS.B]).slice(0, 5),
-              I: shuffleArray([...BINGO_GROUPS.I]).slice(0, 5),
-              N: shuffleArray([...BINGO_GROUPS.N]).slice(0, 4),
-              G: shuffleArray([...BINGO_GROUPS.G]).slice(0, 5),
-              O: shuffleArray([...BINGO_GROUPS.O]).slice(0, 5),
-            }));
-            setGeneratedCards(newCards);
-            resetGameState(false);
-            alert(`¡Datos cargados! Nombre: "${sessionData.babyName}" y ${cardCount} cartones frescos generados. ¡Listo para jugar!`);
-          } else {
-            setGeneratedCards([]);
-            resetGameState(false);
-            alert(`¡Datos cargados! Nombre: "${sessionData.babyName}". Genera cartones para continuar.`);
-          }
+        if (sessionData.babyName !== undefined && sessionData.cards && Array.isArray(sessionData.cards)) {
+          // Guardar los datos y mostrar el modal de opciones
+          setPendingFile(file);
+          setPendingSessionData(sessionData);
+          setShowLoadModal(true);
         } else {
           throw new Error("El formato del archivo de sesión no es correcto.");
         }
@@ -187,27 +160,39 @@ const App: React.FC = () => {
       }
     };
     reader.readAsText(file);
+    event.target.value = ''; // Resetear el input para poder cargar el mismo archivo de nuevo
   };
 
   const handleLoadDataOnly = () => {
-    if (pendingFile) {
-      processFileLoad(pendingFile, false);
+    if (pendingSessionData) {
+      // Cargar datos sin mostrar cartones en pantalla (interfaz ligera)
+      setBabyName(pendingSessionData.babyName);
+      setGeneratedCards(pendingSessionData.cards); // Los cartones se cargan pero pueden no mostrarse
+      resetGameState(false);
+      alert(`¡Datos cargados! Nombre: "${pendingSessionData.babyName}". Cartones listos para el juego (${pendingSessionData.cards.length} cartones).`);
     }
     setShowLoadModal(false);
     setPendingFile(null);
+    setPendingSessionData(null);
   };
 
   const handleLoadDataAndCards = () => {
-    if (pendingFile) {
-      processFileLoad(pendingFile, true);
+    if (pendingSessionData) {
+      // Cargar datos y mostrar cartones en pantalla
+      setBabyName(pendingSessionData.babyName);
+      setGeneratedCards(pendingSessionData.cards);
+      resetGameState(false);
+      alert(`¡Sesión completa cargada! Nombre: "${pendingSessionData.babyName}" y ${pendingSessionData.cards.length} cartones mostrados en pantalla.`);
     }
     setShowLoadModal(false);
     setPendingFile(null);
+    setPendingSessionData(null);
   };
 
   const handleCloseModal = () => {
     setShowLoadModal(false);
     setPendingFile(null);
+    setPendingSessionData(null);
   };
 
   const handleServerPdfDownload = async () => {
