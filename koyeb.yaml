@@ -1,0 +1,19 @@
+name: bingo-py-complete
+services:
+  - name: bingo-py-backend
+    source:
+      type: git
+      repository: https://github.com/phab0s/BINGO-PY.git
+      branch: main
+      dockerfile: backend/Dockerfile
+    ports:
+      - port: 8000
+        targetPort: 8000
+        protocol: http
+    env:
+      - name: PORT
+        value: "8000"
+    regions:
+      - fra
+    instance:
+      type: nano

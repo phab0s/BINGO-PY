@@ -1,10 +1,12 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Controls } from './components/Controls';
 import { PrintLayout } from './components/PrintLayout';
 import { ModeratorView } from './components/ModeratorView';
 import { LoadOptionsModal } from './components/LoadOptionsModal';
+import { BingoPopup } from './components/BingoPopup';
 import { BINGO_GROUPS } from './constants';
-import type { CardData, CalledBingoItem } from './types';
+import { getCompletedCards } from './utils/bingoChecker';
+import type { CardData, CalledBingoItem, VictoryMode } from './types';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || (window.location.origin);
 
@@ -27,6 +29,9 @@ const App: React.FC = () => {
   const [currentItem, setCurrentItem] = useState<CalledBingoItem | null>(null);
   const [nextLetter, setNextLetter] = useState<string | null>(null);
   const [canDraw, setCanDraw] = useState(true);
+  
+  // Estado para modalidad de victoria
+  const [victoryMode, setVictoryMode] = useState<VictoryMode>('full_card');
 
   // Estados para el modal de carga
   const [showLoadModal, setShowLoadModal] = useState(false);
@@ -36,7 +41,35 @@ const App: React.FC = () => {
   // Estado para controlar si se muestran los cartones en pantalla
   const [showCardsOnScreen, setShowCardsOnScreen] = useState(true);
 
+  // Estados para el popup de BINGO
+  const [showBingoPopup, setShowBingoPopup] = useState(false);
+  const [winningCardNumber, setWinningCardNumber] = useState<number>(0);
+  const [completedCards, setCompletedCards] = useState<number[]>([]);
+
   const printLayoutRef = useRef<HTMLDivElement>(null);
+
+  // Efecto para detectar cartones completos
+  useEffect(() => {
+    if (isGameActive && generatedCards.length > 0 && calledItems.length > 0) {
+      const newlyCompletedCards = getCompletedCards(generatedCards, calledItems, victoryMode);
+      
+      // Encontrar cartones que se completaron recientemente
+      const newWinners = newlyCompletedCards.filter(cardNum => 
+        !completedCards.includes(cardNum)
+      );
+      
+      if (newWinners.length > 0) {
+        // Mostrar popup para el primer cartón que se complete
+        setWinningCardNumber(newWinners[0]);
+        setShowBingoPopup(true);
+        setCompletedCards(prev => [...prev, ...newWinners]);
+      }
+    }
+  }, [calledItems, generatedCards, isGameActive, completedCards, victoryMode]);
+
+  const handleCloseBingoPopup = () => {
+    setShowBingoPopup(false);
+  };
 
   const resetGameState = useCallback(async (notifyBackend: boolean) => {
     if (notifyBackend && isGameActive) {
@@ -51,6 +84,8 @@ const App: React.FC = () => {
     setCurrentItem(null);
     setNextLetter(null);
     setCanDraw(true);
+    setCompletedCards([]);
+    setShowBingoPopup(false);
   }, [isGameActive]);
 
   const handleGenerateAutoCards = useCallback((cardCount: number) => {
@@ -248,6 +283,8 @@ const App: React.FC = () => {
           onResetGame={() => resetGameState(true)}
           onSaveSession={handleSaveSession}
           onLoadSession={handleLoadSession}
+          victoryMode={victoryMode}
+          onVictoryModeChange={setVictoryMode}
         />
 
         {isGameActive && (
@@ -256,6 +293,21 @@ const App: React.FC = () => {
             calledItems={calledItems} 
             nextLetter={nextLetter}
           />
+        )}
+
+        {/* Indicador de ganador visible en pantalla */}
+        {showBingoPopup && (
+          <div className="fixed top-4 left-4 right-4 z-[9998] animate-modal-slide-up">
+            <div className="bg-gradient-to-r from-[#4DB6AC] to-[#8A8BC3] text-white p-4 rounded-lg shadow-lg text-center">
+              <div className="flex items-center justify-center gap-2">
+                <span className="text-2xl animate-celebration-pulse">🎉</span>
+                <span className="font-bold text-lg">
+                  ¡Cartón {winningCardNumber} ganó!
+                </span>
+                <span className="text-2xl animate-celebration-pulse">🎉</span>
+              </div>
+            </div>
+          </div>
         )}
 
         {generatedCards.length > 0 && showCardsOnScreen && <PrintLayout ref={printLayoutRef} cards={generatedCards} babyName={babyName} />}
@@ -267,6 +319,13 @@ const App: React.FC = () => {
           onLoadDataOnly={handleLoadDataOnly}
           onLoadDataAndCards={handleLoadDataAndCards}
           fileName={pendingFile?.name}
+        />
+
+        {/* Popup de BINGO */}
+        <BingoPopup
+          isOpen={showBingoPopup}
+          onClose={handleCloseBingoPopup}
+          cardNumber={winningCardNumber}
         />
       </main>
     </div>

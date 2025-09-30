@@ -1,4 +1,6 @@
 import React, { useState, useRef } from 'react';
+import { VICTORY_MODES } from '../constants';
+import { VictoryMode } from '../types';
 
 interface ControlsProps {
   onGenerateAuto: (count: number) => void;
@@ -15,6 +17,9 @@ interface ControlsProps {
   // Props para guardar y cargar sesión
   onSaveSession: () => void;
   onLoadSession: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  // Props para modalidad de victoria
+  victoryMode: VictoryMode;
+  onVictoryModeChange: (mode: VictoryMode) => void;
 }
 
 export const Controls: React.FC<ControlsProps> = ({
@@ -31,6 +36,8 @@ export const Controls: React.FC<ControlsProps> = ({
   onResetGame,
   onSaveSession,
   onLoadSession,
+  victoryMode,
+  onVictoryModeChange,
 }) => {
   const [cardCount, setCardCount] = useState<number | string>(4);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -88,6 +95,39 @@ export const Controls: React.FC<ControlsProps> = ({
               disabled={isGameStarted}
               className="flex-1 min-w-0 p-2 border border-purple-200 rounded-md text-sm sm:text-lg focus:ring-2 focus:ring-pink-300 focus:border-pink-300 disabled:bg-gray-200"
             />
+          </div>
+        </div>
+        
+        {/* Selector de modalidad de victoria */}
+        <div className="space-y-2">
+          <label className="font-semibold text-sm sm:text-lg text-gray-700">
+            Modalidad de Victoria:
+          </label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+            {VICTORY_MODES.map((mode) => (
+              <label
+                key={mode.value}
+                className={`flex items-center p-3 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
+                  victoryMode === mode.value
+                    ? 'border-[#8A8BC3] bg-[#8A8BC3]/10'
+                    : 'border-gray-200 hover:border-[#8A8BC3]/50'
+                } ${isGameStarted ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                <input
+                  type="radio"
+                  name="victoryMode"
+                  value={mode.value}
+                  checked={victoryMode === mode.value}
+                  onChange={(e) => onVictoryModeChange(e.target.value as VictoryMode)}
+                  disabled={isGameStarted}
+                  className="sr-only"
+                />
+                <div className="flex-1">
+                  <div className="font-medium text-sm text-gray-800">{mode.label}</div>
+                  <div className="text-xs text-gray-600 mt-1">{mode.description}</div>
+                </div>
+              </label>
+            ))}
           </div>
         </div>
         

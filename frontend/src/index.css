@@ -308,3 +308,86 @@ html {
     display: none !important;
   }
 }
+
+/* Animación para el popup de BINGO */
+@keyframes bounce-in {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-bounce-in {
+  animation: bounce-in 0.6s ease-out;
+}
+
+/* Animaciones para el modal de BINGO */
+@keyframes modal-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes modal-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(50px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes celebration-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.animate-modal-fade-in {
+  animation: modal-fade-in 0.4s ease-out;
+}
+
+.animate-modal-slide-up {
+  animation: modal-slide-up 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.animate-celebration-pulse {
+  animation: celebration-pulse 1s ease-in-out infinite;
+}
+
+/* Mejoras para móvil */
+@media (max-width: 640px) {
+  .modal-mobile {
+    margin: 1rem;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+  }
+  
+  .modal-mobile .text-3xl {
+    font-size: 1.875rem;
+  }
+  
+  .modal-mobile .text-2xl {
+    font-size: 1.5rem;
+  }
+}

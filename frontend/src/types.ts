@@ -43,3 +43,13 @@ export interface GameState {
     [key in 'B' | 'I' | 'N' | 'G' | 'O']?: BingoItem[];
   };
 }
+
+// --- Tipos para modalidades de victoria ---
+
+export type VictoryMode = 'full_card' | 'line' | 'square' | 'l_shape' | 'diagonal';
+
+export interface VictoryModeOption {
+  value: VictoryMode;
+  label: string;
+  description: string;
+}

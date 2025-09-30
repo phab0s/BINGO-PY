@@ -1,6 +1,34 @@
-import type { CardData } from './types';
+import type { CardData, VictoryModeOption } from './types';
 
 export const BINGO_LETTERS = ['B', 'I', 'N', 'G', 'O'];
+
+export const VICTORY_MODES: VictoryModeOption[] = [
+  {
+    value: 'full_card',
+    label: 'Cartón Lleno',
+    description: 'Completar todo el cartón (24 objetos)'
+  },
+  {
+    value: 'line',
+    label: 'Línea',
+    description: 'Completar cualquier línea horizontal, vertical o diagonal'
+  },
+  {
+    value: 'square',
+    label: 'Cuadrado',
+    description: 'Completar todo el borde del cartón (perímetro completo)'
+  },
+  {
+    value: 'l_shape',
+    label: 'Forma de L',
+    description: 'Completar borde izquierdo + borde inferior'
+  },
+  {
+    value: 'diagonal',
+    label: 'Diagonal',
+    description: 'Completar cualquier diagonal (principal o secundaria)'
+  }
+];
 
 export const BINGO_GROUPS: CardData = {
   B: [
