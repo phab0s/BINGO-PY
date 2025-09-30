@@ -11,7 +11,7 @@ export const VICTORY_MODES: VictoryModeOption[] = [
   {
     value: 'line',
     label: 'Línea',
-    description: 'Completar cualquier línea horizontal, vertical o diagonal'
+    description: 'Completar cualquier línea horizontal'
   },
   {
     value: 'square',
@@ -26,7 +26,7 @@ export const VICTORY_MODES: VictoryModeOption[] = [
   {
     value: 'diagonal',
     label: 'Diagonal',
-    description: 'Completar cualquier diagonal (principal o secundaria)'
+    description: 'Completar la diagonal principal'
   }
 ];
 
