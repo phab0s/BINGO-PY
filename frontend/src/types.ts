@@ -53,3 +53,17 @@ export interface VictoryModeOption {
   label: string;
   description: string;
 }
+
+// --- Tipos para información de victoria ---
+
+export interface WinningPosition {
+  row: number;
+  col: number;
+  letter: 'B' | 'I' | 'N' | 'G' | 'O';
+  itemId: number;
+}
+
+export interface VictoryInfo {
+  isComplete: boolean;
+  winningPositions: WinningPosition[];
+}

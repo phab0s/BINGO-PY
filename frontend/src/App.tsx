@@ -5,8 +5,8 @@ import { ModeratorView } from './components/ModeratorView';
 import { LoadOptionsModal } from './components/LoadOptionsModal';
 import { BingoPopup } from './components/BingoPopup';
 import { BINGO_GROUPS } from './constants';
-import { getCompletedCards } from './utils/bingoChecker';
-import type { CardData, CalledBingoItem, VictoryMode } from './types';
+import { getCompletedCards, getCardVictoryInfo } from './utils/bingoChecker';
+import type { CardData, CalledBingoItem, VictoryMode, WinningPosition } from './types';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || (window.location.origin);
 
@@ -45,6 +45,8 @@ const App: React.FC = () => {
   const [showBingoPopup, setShowBingoPopup] = useState(false);
   const [winningCardNumber, setWinningCardNumber] = useState<number>(0);
   const [completedCards, setCompletedCards] = useState<number[]>([]);
+  const [winningCardData, setWinningCardData] = useState<CardData | null>(null);
+  const [winningPositions, setWinningPositions] = useState<WinningPosition[]>([]);
 
   const printLayoutRef = useRef<HTMLDivElement>(null);
 
@@ -59,8 +61,15 @@ const App: React.FC = () => {
       );
       
       if (newWinners.length > 0) {
+        // Obtener información detallada del primer cartón ganador
+        const firstWinnerIndex = newWinners[0] - 1; // Convertir a índice basado en 0
+        const winnerCardData = generatedCards[firstWinnerIndex];
+        const victoryInfo = getCardVictoryInfo(winnerCardData, calledItems, victoryMode);
+        
         // Mostrar popup para el primer cartón que se complete
         setWinningCardNumber(newWinners[0]);
+        setWinningCardData(winnerCardData);
+        setWinningPositions(victoryInfo.winningPositions);
         setShowBingoPopup(true);
         setCompletedCards(prev => [...prev, ...newWinners]);
       }
@@ -69,6 +78,8 @@ const App: React.FC = () => {
 
   const handleCloseBingoPopup = () => {
     setShowBingoPopup(false);
+    setWinningCardData(null);
+    setWinningPositions([]);
   };
 
   const resetGameState = useCallback(async (notifyBackend: boolean) => {
@@ -86,6 +97,8 @@ const App: React.FC = () => {
     setCanDraw(true);
     setCompletedCards([]);
     setShowBingoPopup(false);
+    setWinningCardData(null);
+    setWinningPositions([]);
   }, [isGameActive]);
 
   const handleGenerateAutoCards = useCallback((cardCount: number) => {
@@ -326,6 +339,10 @@ const App: React.FC = () => {
           isOpen={showBingoPopup}
           onClose={handleCloseBingoPopup}
           cardNumber={winningCardNumber}
+          winningCardData={winningCardData}
+          winningPositions={winningPositions}
+          victoryMode={victoryMode}
+          babyName={babyName}
         />
       </main>
     </div>

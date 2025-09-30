@@ -1,5 +1,17 @@
 import { CardData, CalledBingoItem, VictoryMode } from '../types';
 
+export interface WinningPosition {
+  row: number;
+  col: number;
+  letter: 'B' | 'I' | 'N' | 'G' | 'O';
+  itemId: number;
+}
+
+export interface VictoryInfo {
+  isComplete: boolean;
+  winningPositions: WinningPosition[];
+}
+
 /**
  * Verifica si un cartón de bingo cumple con la modalidad de victoria especificada
  * @param cardData - Los datos del cartón a verificar
@@ -28,6 +40,33 @@ export const isCardComplete = (cardData: CardData, calledItems: CalledBingoItem[
 };
 
 /**
+ * Verifica si un cartón de bingo cumple con la modalidad de victoria especificada y devuelve información detallada
+ * @param cardData - Los datos del cartón a verificar
+ * @param calledItems - Lista de objetos que han sido llamados
+ * @param victoryMode - Modalidad de victoria a verificar
+ * @returns Información detallada sobre la victoria incluyendo las posiciones ganadoras
+ */
+export const getCardVictoryInfo = (cardData: CardData, calledItems: CalledBingoItem[], victoryMode: VictoryMode = 'full_card'): VictoryInfo => {
+  // Crear un Set de los IDs de los objetos llamados para búsqueda rápida
+  const calledItemIds = new Set(calledItems.map(item => item.objeto.id));
+  
+  switch (victoryMode) {
+    case 'full_card':
+      return getFullCardVictoryInfo(cardData, calledItemIds);
+    case 'line':
+      return getLinesVictoryInfo(cardData, calledItemIds);
+    case 'square':
+      return getSquaresVictoryInfo(cardData, calledItemIds);
+    case 'l_shape':
+      return getLShapesVictoryInfo(cardData, calledItemIds);
+    case 'diagonal':
+      return getDiagonalsVictoryInfo(cardData, calledItemIds);
+    default:
+      return getFullCardVictoryInfo(cardData, calledItemIds);
+  }
+};
+
+/**
  * Verifica si el cartón está completamente lleno (modalidad original)
  */
 const checkFullCard = (cardData: CardData, calledItemIds: Set<number>): boolean => {
@@ -48,10 +87,10 @@ const checkFullCard = (cardData: CardData, calledItemIds: Set<number>): boolean 
 };
 
 /**
- * Verifica si hay alguna línea completa (horizontal, vertical o diagonal)
+ * Verifica si hay alguna línea horizontal completa
  */
 const checkLines = (cardData: CardData, calledItemIds: Set<number>): boolean => {
-  // Verificar líneas horizontales
+  // Verificar líneas horizontales únicamente
   for (let row = 0; row < 5; row++) {
     let lineComplete = true;
     for (let col = 0; col < 5; col++) {
@@ -72,24 +111,7 @@ const checkLines = (cardData: CardData, calledItemIds: Set<number>): boolean => 
     if (lineComplete) return true;
   }
   
-  // Verificar líneas verticales
-  const columns = ['B', 'I', 'N', 'G', 'O'] as const;
-  for (const column of columns) {
-    const columnItems = cardData[column];
-    const itemsToCheck = column === 'N' ? columnItems.slice(0, 4) : columnItems;
-    
-    let lineComplete = true;
-    for (const item of itemsToCheck) {
-      if (!calledItemIds.has(item.id)) {
-        lineComplete = false;
-        break;
-      }
-    }
-    if (lineComplete) return true;
-  }
-  
-  // Verificar diagonales
-  return checkDiagonals(cardData, calledItemIds);
+  return false;
 };
 
 /**
@@ -188,7 +210,7 @@ const checkLShapes = (cardData: CardData, calledItemIds: Set<number>): boolean =
 };
 
 /**
- * Verifica si hay alguna diagonal completa
+ * Verifica si la diagonal principal está completa (de arriba-izquierda a abajo-derecha)
  */
 const checkDiagonals = (cardData: CardData, calledItemIds: Set<number>): boolean => {
   const columns = ['B', 'I', 'N', 'G', 'O'] as const;
@@ -197,26 +219,6 @@ const checkDiagonals = (cardData: CardData, calledItemIds: Set<number>): boolean
   let diagonalComplete = true;
   for (let i = 0; i < 5; i++) {
     const column = columns[i];
-    const columnItems = cardData[column];
-    
-    // Saltar el centro para la columna N
-    if (column === 'N' && i === 2) {
-      diagonalComplete = false;
-      break;
-    }
-    
-    const itemIndex = column === 'N' && i > 2 ? i - 1 : i;
-    if (itemIndex >= columnItems.length || !calledItemIds.has(columnItems[itemIndex].id)) {
-      diagonalComplete = false;
-      break;
-    }
-  }
-  if (diagonalComplete) return true;
-  
-  // Diagonal secundaria (de arriba-derecha a abajo-izquierda)
-  diagonalComplete = true;
-  for (let i = 0; i < 5; i++) {
-    const column = columns[4 - i];
     const columnItems = cardData[column];
     
     // Saltar el centro para la columna N
@@ -252,4 +254,251 @@ export const getCompletedCards = (cards: CardData[], calledItems: CalledBingoIte
   });
   
   return completedCards;
+};
+
+// Funciones de información detallada de victoria
+
+/**
+ * Obtiene información detallada sobre la victoria de cartón completo
+ */
+const getFullCardVictoryInfo = (cardData: CardData, calledItemIds: Set<number>): VictoryInfo => {
+  const winningPositions: WinningPosition[] = [];
+  const columns = ['B', 'I', 'N', 'G', 'O'] as const;
+  
+  for (const column of columns) {
+    const columnItems = cardData[column];
+    const itemsToCheck = column === 'N' ? columnItems.slice(0, 4) : columnItems;
+    
+    for (let i = 0; i < itemsToCheck.length; i++) {
+      const item = itemsToCheck[i];
+      if (calledItemIds.has(item.id)) {
+        const row = column === 'N' && i >= 2 ? i + 1 : i; // Ajustar para el espacio libre en N
+        winningPositions.push({
+          row,
+          col: columns.indexOf(column),
+          letter: column,
+          itemId: item.id
+        });
+      }
+    }
+  }
+  
+  const isComplete = winningPositions.length === 24; // 5+5+4+5+5 = 24 (sin el espacio libre)
+  
+  return { isComplete, winningPositions };
+};
+
+/**
+ * Obtiene información detallada sobre la victoria de líneas horizontales
+ */
+const getLinesVictoryInfo = (cardData: CardData, calledItemIds: Set<number>): VictoryInfo => {
+  const winningPositions: WinningPosition[] = [];
+  const columns = ['B', 'I', 'N', 'G', 'O'] as const;
+  
+  // Verificar líneas horizontales
+  for (let row = 0; row < 5; row++) {
+    const linePositions: WinningPosition[] = [];
+    let lineComplete = true;
+    
+    for (let col = 0; col < 5; col++) {
+      const column = columns[col];
+      const columnItems = cardData[column];
+      
+      // Saltar el centro para la columna N
+      if (column === 'N' && row === 2) {
+        continue;
+      }
+      
+      const itemIndex = column === 'N' && row > 2 ? row - 1 : row;
+      if (itemIndex < columnItems.length) {
+        const item = columnItems[itemIndex];
+        if (calledItemIds.has(item.id)) {
+          linePositions.push({
+            row,
+            col,
+            letter: column,
+            itemId: item.id
+          });
+        } else {
+          lineComplete = false;
+          break;
+        }
+      }
+    }
+    
+    if (lineComplete && linePositions.length > 0) {
+      winningPositions.push(...linePositions);
+      return { isComplete: true, winningPositions };
+    }
+  }
+  
+  return { isComplete: false, winningPositions };
+};
+
+/**
+ * Obtiene información detallada sobre la victoria de perímetro
+ */
+const getSquaresVictoryInfo = (cardData: CardData, calledItemIds: Set<number>): VictoryInfo => {
+  const winningPositions: WinningPosition[] = [];
+  const columns = ['B', 'I', 'N', 'G', 'O'] as const;
+  
+  // Verificar borde superior (fila 0)
+  for (let col = 0; col < 5; col++) {
+    const column = columns[col];
+    const columnItems = cardData[column];
+    const itemIndex = 0;
+    if (itemIndex < columnItems.length && calledItemIds.has(columnItems[itemIndex].id)) {
+      winningPositions.push({
+        row: 0,
+        col,
+        letter: column,
+        itemId: columnItems[itemIndex].id
+      });
+    }
+  }
+  
+  // Verificar borde inferior (fila 4)
+  for (let col = 0; col < 5; col++) {
+    const column = columns[col];
+    const columnItems = cardData[column];
+    
+    if (column === 'N') {
+      const itemIndex = 3;
+      if (itemIndex < columnItems.length && calledItemIds.has(columnItems[itemIndex].id)) {
+        winningPositions.push({
+          row: 4,
+          col,
+          letter: column,
+          itemId: columnItems[itemIndex].id
+        });
+      }
+    } else {
+      const itemIndex = 4;
+      if (itemIndex < columnItems.length && calledItemIds.has(columnItems[itemIndex].id)) {
+        winningPositions.push({
+          row: 4,
+          col,
+          letter: column,
+          itemId: columnItems[itemIndex].id
+        });
+      }
+    }
+  }
+  
+  // Verificar borde izquierdo (columna B, filas 1-3)
+  const columnB = cardData.B;
+  for (let row = 1; row < 4; row++) {
+    if (row < columnB.length && calledItemIds.has(columnB[row].id)) {
+      winningPositions.push({
+        row,
+        col: 0,
+        letter: 'B',
+        itemId: columnB[row].id
+      });
+    }
+  }
+  
+  // Verificar borde derecho (columna O, filas 1-3)
+  const columnO = cardData.O;
+  for (let row = 1; row < 4; row++) {
+    if (row < columnO.length && calledItemIds.has(columnO[row].id)) {
+      winningPositions.push({
+        row,
+        col: 4,
+        letter: 'O',
+        itemId: columnO[row].id
+      });
+    }
+  }
+  
+  const isComplete = winningPositions.length >= 16; // Aproximadamente el perímetro completo
+  
+  return { isComplete, winningPositions };
+};
+
+/**
+ * Obtiene información detallada sobre la victoria de forma L
+ */
+const getLShapesVictoryInfo = (cardData: CardData, calledItemIds: Set<number>): VictoryInfo => {
+  const winningPositions: WinningPosition[] = [];
+  const columns = ['B', 'I', 'N', 'G', 'O'] as const;
+  
+  // Verificar borde izquierdo completo (columna B, todas las filas)
+  const columnB = cardData.B;
+  for (let row = 0; row < columnB.length; row++) {
+    if (calledItemIds.has(columnB[row].id)) {
+      winningPositions.push({
+        row,
+        col: 0,
+        letter: 'B',
+        itemId: columnB[row].id
+      });
+    }
+  }
+  
+  // Verificar borde inferior completo (todas las columnas, fila 4)
+  for (let col = 0; col < 5; col++) {
+    const column = columns[col];
+    const columnItems = cardData[column];
+    
+    if (column === 'N') {
+      const itemIndex = 3;
+      if (itemIndex < columnItems.length && calledItemIds.has(columnItems[itemIndex].id)) {
+        winningPositions.push({
+          row: 4,
+          col,
+          letter: column,
+          itemId: columnItems[itemIndex].id
+        });
+      }
+    } else {
+      const itemIndex = 4;
+      if (itemIndex < columnItems.length && calledItemIds.has(columnItems[itemIndex].id)) {
+        winningPositions.push({
+          row: 4,
+          col,
+          letter: column,
+          itemId: columnItems[itemIndex].id
+        });
+      }
+    }
+  }
+  
+  const isComplete = winningPositions.length >= 9; // 5 (columna B) + 4 (fila inferior sin B)
+  
+  return { isComplete, winningPositions };
+};
+
+/**
+ * Obtiene información detallada sobre la victoria de diagonal principal
+ */
+const getDiagonalsVictoryInfo = (cardData: CardData, calledItemIds: Set<number>): VictoryInfo => {
+  const winningPositions: WinningPosition[] = [];
+  const columns = ['B', 'I', 'N', 'G', 'O'] as const;
+  
+  // Diagonal principal (de arriba-izquierda a abajo-derecha)
+  for (let i = 0; i < 5; i++) {
+    const column = columns[i];
+    const columnItems = cardData[column];
+    
+    // Saltar el centro para la columna N
+    if (column === 'N' && i === 2) {
+      continue;
+    }
+    
+    const itemIndex = column === 'N' && i > 2 ? i - 1 : i;
+    if (itemIndex < columnItems.length && calledItemIds.has(columnItems[itemIndex].id)) {
+      const row = column === 'N' && i > 2 ? i : i; // Ajustar para el espacio libre
+      winningPositions.push({
+        row,
+        col: i,
+        letter: column,
+        itemId: columnItems[itemIndex].id
+      });
+    }
+  }
+  
+  const isComplete = winningPositions.length >= 4; // Diagonal principal sin el centro
+  
+  return { isComplete, winningPositions };
 };
