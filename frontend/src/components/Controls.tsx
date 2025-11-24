@@ -98,38 +98,49 @@ export const Controls: React.FC<ControlsProps> = ({
           </div>
         </div>
         
-        {/* Selector de modalidad de victoria */}
-        <div className="space-y-2">
-          <label className="font-semibold text-sm sm:text-lg text-gray-700">
-            Modalidad de Victoria:
-          </label>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-            {VICTORY_MODES.map((mode) => (
-              <label
-                key={mode.value}
-                className={`flex items-center p-3 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
-                  victoryMode === mode.value
-                    ? 'border-[#8A8BC3] bg-[#8A8BC3]/10'
-                    : 'border-gray-200 hover:border-[#8A8BC3]/50'
-                } ${isGameStarted ? 'opacity-50 cursor-not-allowed' : ''}`}
-              >
-                <input
-                  type="radio"
-                  name="victoryMode"
-                  value={mode.value}
-                  checked={victoryMode === mode.value}
-                  onChange={(e) => onVictoryModeChange(e.target.value as VictoryMode)}
-                  disabled={isGameStarted}
-                  className="sr-only"
-                />
-                <div className="flex-1">
-                  <div className="font-medium text-sm text-gray-800">{mode.label}</div>
-                  <div className="text-xs text-gray-600 mt-1">{mode.description}</div>
-                </div>
-              </label>
-            ))}
+        {/* Selector de modalidad de victoria - Solo visible cuando hay cartones */}
+        {hasCards && (
+          <div className="space-y-2 p-4 bg-purple-50 rounded-lg border-2 border-purple-200">
+            <label className="font-semibold text-sm sm:text-lg text-purple-800 flex items-center gap-2">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Modalidad de Victoria:
+              {isGameStarted && <span className="text-xs font-normal text-purple-600">(No se puede cambiar durante el juego)</span>}
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+              {VICTORY_MODES.map((mode) => (
+                <label
+                  key={mode.value}
+                  className={`flex items-center p-3 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
+                    victoryMode === mode.value
+                      ? 'border-[#8A8BC3] bg-[#8A8BC3]/10 shadow-md'
+                      : 'border-gray-200 hover:border-[#8A8BC3]/50 bg-white'
+                  } ${isGameStarted ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  <input
+                    type="radio"
+                    name="victoryMode"
+                    value={mode.value}
+                    checked={victoryMode === mode.value}
+                    onChange={(e) => onVictoryModeChange(e.target.value as VictoryMode)}
+                    disabled={isGameStarted}
+                    className="sr-only"
+                  />
+                  <div className="flex-1">
+                    <div className="font-medium text-sm text-gray-800">{mode.label}</div>
+                    <div className="text-xs text-gray-600 mt-1">{mode.description}</div>
+                  </div>
+                  {victoryMode === mode.value && (
+                    <svg className="w-5 h-5 text-[#8A8BC3] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                  )}
+                </label>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
         
         {/* Botones de Sesión */}
         <div className="flex flex-wrap items-center justify-center gap-2">

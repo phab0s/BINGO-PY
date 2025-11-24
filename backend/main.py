@@ -181,15 +181,26 @@ def create_bingo_pdf(request: PDFRequest):
                 pdf.rect(x, y, CELL_WIDTH, CELL_HEIGHT)
 
                 if i == 2 and j == 2: # Celda del centro
+                    # "BIENVENIDA" en HotPink
                     pdf.set_font("Helvetica", "B", 10)
-                    pdf.set_text_color(229, 155, 180)
+                    pdf.set_text_color(255, 105, 180)  # HotPink
                     pdf.set_xy(x, y + (CELL_HEIGHT / 4) - 5)
                     pdf.cell(CELL_WIDTH, 10, "BIENVENIDA", align="C")
                     
-                    pdf.set_font("Helvetica", "B", 20)
-                    pdf.set_text_color(138, 139, 195)
+                    # Ajustar tamaño de fuente según longitud del nombre
+                    baby_name = request.babyName or ""
+                    if len(baby_name) > 12:
+                        font_size = 14
+                    elif len(baby_name) > 8:
+                        font_size = 16
+                    else:
+                        font_size = 20
+                    
+                    # Nombre en HotPink
+                    pdf.set_font("Helvetica", "B", font_size)
+                    pdf.set_text_color(255, 105, 180)  # HotPink
                     pdf.set_xy(x, y + (CELL_HEIGHT / 2))
-                    pdf.cell(CELL_WIDTH, 10, request.babyName or "", align="C")
+                    pdf.cell(CELL_WIDTH, 10, baby_name, align="C")
                     continue
 
                 item_index = j - 1 if i == 2 and j > 2 else j

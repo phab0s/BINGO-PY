@@ -70,11 +70,17 @@ const App: React.FC = () => {
         const winnerCardData = generatedCards[firstWinnerIndex];
         const victoryInfo = getCardVictoryInfo(winnerCardData, calledItems, victoryMode);
         
-        // Mostrar popup para el primer cartón que se complete
-        setWinningCardNumber(newWinners[0]);
-        setWinningCardData(winnerCardData);
-        setWinningPositions(victoryInfo.winningPositions);
-        setShowBingoPopup(true);
+        // Deshabilitar el botón de llamar para que no se pueda seguir jugando
+        setCanDraw(false);
+        
+        // Esperar 2 segundos antes de mostrar el popup para que el audio termine
+        setTimeout(() => {
+          setWinningCardNumber(newWinners[0]);
+          setWinningCardData(winnerCardData);
+          setWinningPositions(victoryInfo.winningPositions);
+          setShowBingoPopup(true);
+        }, 2000);
+        
         setCompletedCards(prev => [...prev, ...newWinners]);
       }
     }
@@ -85,6 +91,16 @@ const App: React.FC = () => {
     setWinningCardData(null);
     setWinningPositions([]);
   };
+
+  const handleContinueWithoutWinner = useCallback(() => {
+    // Marcar el cartón ganador como "ya procesado" para que no vuelva a detectarse
+    const currentWinners = getCompletedCards(generatedCards, calledItems, victoryMode);
+    if (currentWinners.length > 0) {
+      setCompletedCards(prev => [...prev, ...currentWinners]);
+    }
+    // Reactivar el botón de llamar
+    setCanDraw(true);
+  }, [generatedCards, calledItems, victoryMode]);
 
   const resetGameState = useCallback(async (notifyBackend: boolean) => {
     if (notifyBackend && isGameActive) {
@@ -154,6 +170,16 @@ const App: React.FC = () => {
 
   const handleDrawItem = async () => {
     if (!canDraw) return;
+    
+    // Verificar si ya hay un ganador ANTES de llamar el siguiente objeto
+    if (calledItems.length > 0) {
+      const currentWinners = getCompletedCards(generatedCards, calledItems, victoryMode);
+      if (currentWinners.length > 0 && !completedCards.includes(currentWinners[0])) {
+        // Ya hay un ganador, no permitir más llamadas
+        return;
+      }
+    }
+    
     try {
       const response = await fetch(`${API_BASE_URL}/api/game/next`);
       if (!response.ok) {
@@ -315,6 +341,8 @@ const App: React.FC = () => {
             calledItems={calledItems} 
             nextLetter={nextLetter}
             audioPlayer={audioPlayer}
+            hasWinner={!canDraw && completedCards.length > 0}
+            onContinueWithoutWinner={handleContinueWithoutWinner}
           />
         )}
 
