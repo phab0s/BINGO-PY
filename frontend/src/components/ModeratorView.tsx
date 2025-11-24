@@ -1,15 +1,25 @@
 import React, { useMemo } from 'react';
 import type { CalledBingoItem } from '../types';
 
+interface AudioPlayer {
+  replayAudio: () => void;
+  toggleMute: () => void;
+  setVolume: (volume: number) => void;
+  isMuted: boolean;
+  volume: number;
+  isPlaying: boolean;
+}
+
 interface ModeratorViewProps {
   currentItem: CalledBingoItem | null;
   calledItems: CalledBingoItem[];
   nextLetter: string | null;
+  audioPlayer: AudioPlayer;
 }
 
 const BINGO_LETTERS: ('B' | 'I' | 'N' | 'G' | 'O')[] = ['B', 'I', 'N', 'G', 'O'];
 
-export const ModeratorView: React.FC<ModeratorViewProps> = ({ currentItem, calledItems, nextLetter }) => {
+export const ModeratorView: React.FC<ModeratorViewProps> = ({ currentItem, calledItems, nextLetter, audioPlayer }) => {
 
   // Agrupar los objetos llamados por su letra
   const calledItemsByLetter = useMemo(() => {
@@ -26,6 +36,69 @@ export const ModeratorView: React.FC<ModeratorViewProps> = ({ currentItem, calle
 
   return (
     <div className="mt-6 sm:mt-8 p-4 sm:p-6 bg-white/70 rounded-xl shadow-lg print:hidden">
+      {/* Controles de Audio */}
+      <div className="mb-4 flex flex-wrap items-center gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
+        <button
+          onClick={audioPlayer.replayAudio}
+          disabled={!currentItem || audioPlayer.isPlaying}
+          className="flex items-center gap-2 px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          Repetir Audio
+        </button>
+
+        <button
+          onClick={audioPlayer.toggleMute}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+            audioPlayer.isMuted 
+              ? 'bg-red-500 text-white hover:bg-red-600' 
+              : 'bg-green-500 text-white hover:bg-green-600'
+          }`}
+        >
+          {audioPlayer.isMuted ? (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" clipRule="evenodd" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+            </svg>
+          ) : (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+            </svg>
+          )}
+          {audioPlayer.isMuted ? 'Silenciado' : 'Audio'}
+        </button>
+
+        <div className="flex items-center gap-2 flex-1 min-w-[200px]">
+          <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+          </svg>
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.1"
+            value={audioPlayer.volume}
+            onChange={(e) => audioPlayer.setVolume(parseFloat(e.target.value))}
+            disabled={audioPlayer.isMuted}
+            className="flex-1 h-2 bg-purple-200 rounded-lg appearance-none cursor-pointer disabled:opacity-50"
+          />
+          <span className="text-sm font-medium text-purple-700 min-w-[3ch]">
+            {Math.round(audioPlayer.volume * 100)}%
+          </span>
+        </div>
+
+        {audioPlayer.isPlaying && (
+          <div className="flex items-center gap-2 text-purple-600 animate-pulse">
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+            </svg>
+            <span className="text-sm font-medium">Reproduciendo...</span>
+          </div>
+        )}
+      </div>
+
       {/* Panel Superior: Último llamado y Siguiente Letra */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start mb-6 sm:mb-8">
         <div className="text-center">

@@ -93,7 +93,7 @@ export const BINGO_GROUPS: CardData = {
     { id: 213, name: 'Iguana', imageUrl: '/imagenes/animalitos/Iguana.png' },
     { id: 214, name: 'Jaguar', imageUrl: '/imagenes/animalitos/Jaguar.png' },
     { id: 215, name: 'Jirafa', imageUrl: '/imagenes/animalitos/Jirafa.png' },
-    { id: 216, name: 'Kangaroo', imageUrl: '/imagenes/animalitos/Kangaroo.png' },
+    { id: 216, name: 'Canguro', imageUrl: '/imagenes/animalitos/Kangaroo.png' },
     { id: 217, name: 'Koala', imageUrl: '/imagenes/animalitos/Koala.png' },
     // Alimentos para columna I (G-K)
     { id: 218, name: 'Galletas', imageUrl: '/imagenes/alimentos/Galletas.png' },
@@ -181,7 +181,7 @@ export const BINGO_GROUPS: CardData = {
     { id: 501, name: 'Unicornio', imageUrl: '/imagenes/animalitos/Unicornio.png' },
     { id: 502, name: 'Vaca', imageUrl: '/imagenes/animalitos/Vaca.png' },
     { id: 503, name: 'Venado', imageUrl: '/imagenes/animalitos/Venado.png' },
-    { id: 504, name: 'Vivora', imageUrl: '/imagenes/animalitos/Vivora.png' },
+    { id: 504, name: 'Víbora', imageUrl: '/imagenes/animalitos/Vibora.png' },
     { id: 505, name: 'Zorro', imageUrl: '/imagenes/animalitos/Zorro.png' },
     // Alimentos para columna O (U-Z)
     { id: 506, name: 'Uvas', imageUrl: '/imagenes/alimentos/Uvas.png' },

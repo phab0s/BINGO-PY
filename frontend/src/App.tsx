@@ -6,6 +6,7 @@ import { LoadOptionsModal } from './components/LoadOptionsModal';
 import { BingoPopup } from './components/BingoPopup';
 import { BINGO_GROUPS } from './constants';
 import { getCompletedCards, getCardVictoryInfo } from './utils/bingoChecker';
+import { useAudioPlayer } from './hooks/useAudioPlayer';
 import type { CardData, CalledBingoItem, VictoryMode, WinningPosition } from './types';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || (window.location.origin);
@@ -49,6 +50,9 @@ const App: React.FC = () => {
   const [winningPositions, setWinningPositions] = useState<WinningPosition[]>([]);
 
   const printLayoutRef = useRef<HTMLDivElement>(null);
+
+  // Audio player hook
+  const audioPlayer = useAudioPlayer();
 
   // Efecto para detectar cartones completos
   useEffect(() => {
@@ -163,6 +167,11 @@ const App: React.FC = () => {
       setCurrentItem(data.llamado);
       setCalledItems(prev => [...prev, data.llamado]);
       setNextLetter(data.siguiente_letra);
+      
+      // Reproducir audio del item llamado
+      if (data.llamado?.objeto?.id) {
+        audioPlayer.playAudio(data.llamado.objeto.id);
+      }
     } catch (error) {
       console.error("Error al llamar objeto:", error);
     }
@@ -305,6 +314,7 @@ const App: React.FC = () => {
             currentItem={currentItem} 
             calledItems={calledItems} 
             nextLetter={nextLetter}
+            audioPlayer={audioPlayer}
           />
         )}
 
