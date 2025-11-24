@@ -106,7 +106,7 @@ export const BINGO_GROUPS: CardData = {
     { id: 17, name: 'Libro de Cuentos', imageUrl: '/imagenes/bebe/Libro de cuentos.png' },
     { id: 18, name: 'Mamá', imageUrl: '/imagenes/bebe/Mamá.png' },
     { id: 19, name: 'Medias', imageUrl: '/imagenes/bebe/Medias.png' },
-    { id: 20, name: 'Móvil de cuna', imageUrl: '/imagenes/bebe/Móvil de cuna.png' },
+    { id: 20, name: 'Móvil de Cuna', imageUrl: '/imagenes/bebe/Móvil de cuna.png' },
     { id: 21, name: 'Oso de Peluche', imageUrl: '/imagenes/bebe/Oso de peluche.png' },
     { id: 22, name: 'Pañal', imageUrl: '/imagenes/bebe/Pañal.png' },
     { id: 23, name: 'Pañalera', imageUrl: '/imagenes/bebe/Pañalera.png' },
