@@ -146,7 +146,10 @@ def create_bingo_pdf(request: PDFRequest):
     CELL_HEIGHT = GRID_HEIGHT / 5
     CARD_Y_START = (pdf.h - (HEADER_HEIGHT + GRID_HEIGHT)) / 2
 
-    base_image_path = Path(__file__).parent.parent / "frontend" / "public"
+    # Intentar primero la ruta de producción (static), luego desarrollo (frontend/public)
+    static_path = Path(__file__).parent / "static"
+    dev_path = Path(__file__).parent.parent / "frontend" / "public"
+    base_image_path = static_path if static_path.exists() else dev_path
 
     for card_data in request.cards:
         pdf.add_page()
