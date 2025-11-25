@@ -287,10 +287,38 @@ html {
   .bingo-cell {
     border: 1px solid #D6D2E8 !important;
     min-height: 100px;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
 
   .bingo-cell p {
     font-size: 8pt !important;
+  }
+
+  /* Espaciado específico para la celda del nombre del bebé en print */
+  .free-space-content {
+    gap: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .free-space-title {
+    line-height: 0.8 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+  }
+
+  .free-space-name {
+    line-height: 0.8 !important;
+    margin: 0 !important;
+    margin-top: -4px !important;
+    padding: 0 !important;
+    display: block !important;
   }
 
   img {

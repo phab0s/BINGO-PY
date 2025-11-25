@@ -9,13 +9,13 @@ interface BingoCardProps {
 }
 
 const FreeSpace: React.FC<{ babyName?: string }> = ({ babyName }) => (
-  <div className="bingo-cell w-full h-full bg-white relative">
-    <div className="flex-1 flex flex-col items-center justify-center p-1">
-      <span className="text-center font-bold text-[#E59BB4] text-[0.65rem] sm:text-xs tracking-wider mb-1">
+  <div className="bingo-cell w-full h-full bg-white relative flex items-center justify-center">
+    <div className="free-space-content flex flex-col items-center justify-center p-1">
+      <span className="free-space-title text-center font-bold text-[#E59BB4] text-[0.65rem] sm:text-xs tracking-wider">
         BIENVENIDA
       </span>
       {babyName && (
-        <span className="text-center font-pacifico text-[0.55rem] sm:text-[0.65rem] text-[#8A8BC3] leading-none">
+        <span className="free-space-name text-center font-pacifico text-[0.55rem] sm:text-[0.65rem] text-[#8A8BC3] leading-none">
           {babyName}
         </span>
       )}

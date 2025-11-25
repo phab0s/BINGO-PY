@@ -11,13 +11,13 @@ interface WinningCardProps {
 }
 
 const FreeSpace: React.FC<{ babyName?: string; isWinning?: boolean }> = ({ babyName, isWinning = false }) => (
-  <div className={`bingo-cell w-full h-full relative ${isWinning ? 'bg-yellow-200 border-4 border-yellow-500' : 'bg-white'}`}>
-    <div className="flex-1 flex flex-col items-center justify-center p-1">
-      <span className="text-center font-bold text-[#E59BB4] text-[0.65rem] sm:text-xs tracking-wider mb-1">
+  <div className={`bingo-cell w-full h-full relative flex items-center justify-center ${isWinning ? 'bg-yellow-200 border-4 border-yellow-500' : 'bg-white'}`}>
+    <div className="free-space-content flex flex-col items-center justify-center p-1">
+      <span className="free-space-title text-center font-bold text-[#E59BB4] text-[0.65rem] sm:text-xs tracking-wider">
         BIENVENIDA
       </span>
       {babyName && (
-        <span className="text-center font-pacifico text-[0.55rem] sm:text-[0.65rem] text-[#8A8BC3] leading-none">
+        <span className="free-space-name text-center font-pacifico text-[0.55rem] sm:text-[0.65rem] text-[#8A8BC3] leading-none">
           {babyName}
         </span>
       )}
