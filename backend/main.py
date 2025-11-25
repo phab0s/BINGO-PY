@@ -136,6 +136,12 @@ class PDF(FPDF):
 def create_bingo_pdf(request: PDFRequest):
     pdf = PDF(orientation="P", unit="mm", format="Letter")
     pdf.set_auto_page_break(auto=True, margin=15)
+    
+    # Agregar fuente personalizada Pacifico
+    fonts_path = Path(__file__).parent / "fonts"
+    pacifico_font = fonts_path / "Pacifico-Regular.ttf"
+    if pacifico_font.exists():
+        pdf.add_font("Pacifico", "", str(pacifico_font), uni=True)
 
     # --- Constantes de Diseño ---
     CARD_MARGIN = 15
@@ -184,9 +190,9 @@ def create_bingo_pdf(request: PDFRequest):
                 pdf.rect(x, y, CELL_WIDTH, CELL_HEIGHT)
 
                 if i == 2 and j == 2: # Celda del centro
-                    # "BIENVENIDA" en HotPink
+                    # "BIENVENIDA" en color rosa
                     pdf.set_font("Helvetica", "B", 10)
-                    pdf.set_text_color(255, 105, 180)  # HotPink
+                    pdf.set_text_color(229, 155, 180)  # Color rosa #E59BB4
                     pdf.set_xy(x, y + (CELL_HEIGHT / 2) - 8)
                     pdf.cell(CELL_WIDTH, 5, "BIENVENIDA", align="C")
                     
@@ -199,9 +205,13 @@ def create_bingo_pdf(request: PDFRequest):
                     else:
                         font_size = 20
                     
-                    # Nombre en HotPink - Reducir espacio entre textos
-                    pdf.set_font("Helvetica", "B", font_size)
-                    pdf.set_text_color(255, 105, 180)  # HotPink
+                    # Nombre del bebé con fuente Pacifico si está disponible
+                    if pacifico_font.exists():
+                        pdf.set_font("Pacifico", "", font_size)
+                    else:
+                        pdf.set_font("Helvetica", "B", font_size)
+                    
+                    pdf.set_text_color(138, 139, 195)  # Color morado #8A8BC3
                     pdf.set_xy(x, y + (CELL_HEIGHT / 2) - 2)
                     pdf.cell(CELL_WIDTH, 5, baby_name, align="C")
                     continue
