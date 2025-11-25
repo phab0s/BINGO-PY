@@ -140,7 +140,7 @@ export const ModeratorView: React.FC<ModeratorViewProps> = ({ currentItem, calle
         <div className="text-center">
           <h4 className="text-lg sm:text-xl font-semibold text-gray-700 mb-3">Último Objeto Llamado:</h4>
           {currentItem ? (
-            <div className="inline-flex flex-col items-center justify-center p-3 sm:p-4 bg-purple-100 border-4 border-dashed border-purple-300 rounded-lg shadow-inner min-h-[180px] sm:min-h-[220px] w-full max-w-[280px] sm:max-w-none sm:min-w-[220px]">
+            <div className="inline-flex flex-col items-center justify-center p-3 sm:p-4 bg-white border-4 border-purple-400 rounded-xl shadow-lg min-h-[180px] sm:min-h-[220px] w-full max-w-[280px] sm:max-w-none sm:min-w-[220px]">
               <span className="text-4xl sm:text-7xl font-bold text-purple-500">{currentItem.letra}</span>
               <img 
                 src={currentItem.objeto.imageUrl} 
@@ -150,7 +150,7 @@ export const ModeratorView: React.FC<ModeratorViewProps> = ({ currentItem, calle
               <span className="text-lg sm:text-3xl font-bold text-purple-800 text-center px-2">{currentItem.objeto.name}</span>
             </div>
           ) : (
-            <div className="inline-flex items-center justify-center p-3 sm:p-4 bg-gray-100 border-4 border-dashed border-gray-300 rounded-lg shadow-inner min-h-[180px] sm:min-h-[220px] w-full max-w-[280px] sm:max-w-none sm:min-w-[220px]">
+            <div className="inline-flex items-center justify-center p-3 sm:p-4 bg-white border-4 border-gray-300 rounded-xl shadow-lg min-h-[180px] sm:min-h-[220px] w-full max-w-[280px] sm:max-w-none sm:min-w-[220px]">
               <span className="text-lg sm:text-2xl text-gray-500 text-center px-2">Presiona "Llamar Objeto"</span>
             </div>
           )}
